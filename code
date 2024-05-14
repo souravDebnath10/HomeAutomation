@@ -1,0 +1,74 @@
+#include <RTClib.h>
+//#include<LiquidCrystal_I2C.h>
+const int sensor=A0; 
+float tempc;  
+float vout; 
+float dummy; 
+
+//LiquidCrystal_I2C lcd(0x27 ,16, 2);
+
+int data;
+
+const int lightPin = 7;
+RTC_DS3231 rtc;
+
+void setup() {
+  
+
+  pinMode(lightPin, OUTPUT);
+  rtc.begin();
+  
+  
+  pinMode(sensor,INPUT);
+  pinMode(2,OUTPUT);
+
+  Serial.begin(9600);
+
+}
+
+void loop() {
+  
+    data = Serial.read(); // Reads the data from the serial port
+
+
+    DateTime now = rtc.now();
+    Serial.print("Current Time: ");
+    // Add leading zero for single-digit hours/minutes
+    //Serial.print(now.hour() < 10 ? "0" : "");
+    int x = (now.hour());
+    int y = (now.minute());
+    Serial.print(x);
+    Serial.print(":");
+    //Serial.print(now.minute() < 10 ? "0" : "");
+    Serial.println(y);
+    Serial.println(data);
+    if(x >= 17 && x <= 22 ){
+      digitalWrite(lightPin,HIGH);
+    }
+    else{
+      digitalWrite(lightPin,LOW);
+    }
+
+    vout=analogRead(sensor);
+    vout=(vout*500)/1023;
+    tempc=vout/3.5;
+    dummy=23; 
+    Serial.println(tempc);
+
+    if (tempc>25 )
+    {
+      digitalWrite(2,HIGH);
+      Serial.println("on");
+    
+    }
+    if (tempc<25){
+      digitalWrite(2,LOW);
+      Serial.println("off");
+    }
+
+
+    delay(1000); //Delay of 1 second for ease of viewing 
+
+
+  // Your light control logic here
+}
